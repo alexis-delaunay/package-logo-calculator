@@ -332,13 +332,12 @@
             }
 
             // Hilfsfunktion für deutsche Formatierung
-            const formatDe = (num, digits = 0) => num.toLocaleString('de-DE', { 
-                minimumFractionDigits: digits, 
-                maximumFractionDigits: digits 
+            const formatDe = (num, maxDigits = 0) => num.toLocaleString('de-DE', { 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: maxDigits 
             });
 
             // Texte updaten
-            const logoWShrink = logoW.toFixed(1).replace('.', ','); // Für die Herleitung
             document.getElementById('res-logo-w').innerText = formatDe(logoW, 1) + " mm";
             document.getElementById('res-logo-der').innerText = `Herleitung: ${rule.replace('.', ',')} = ${formatDe(logoW, 1)} mm`;
             
