@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSB Logo Rechner</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+        h1 { font-size: 24px; margin-top: 0; text-align: center; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .results {
+            background: #fbfbfd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .derivation { color: #86868b; font-size: 12px; }
+        
+        #preview-container {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            background: #e5e5e5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+        #surface {
+            background: white;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        #logo {
+            max-width: 100%;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>KSB Logo Platzierung</h1>
+        
+        <div class="input-group">
+            <label for="width-b">Breite (B) in cm</label>
+            <input type="number" id="width-b" value="100" min="1" oninput="calculate()">
+        </div>
+        
+        <div class="input-group">
+            <label for="height-h">Höhe (H) in cm</label>
+            <input type="number" id="height-h" value="80" min="1" oninput="calculate()">
+        </div>
+
+        <div class="results" id="results">
+            <!-- Ergebnisse erscheinen hier -->
+        </div>
+    </div>
+
+    <div id="preview-container">
+        <div id="surface">
+            <img src="ksb-logo.png" id="logo" alt="KSB Logo">
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const B = parseFloat(document.getElementById('width-b').value) || 0;
+            const H = parseFloat(document.getElementById('height-h').value) || 0;
+            const logoImg = document.getElementById('logo');
+            const surface = document.getElementById('surface');
+            const resultsDiv = document.getElementById('results');
+
+            if (B <= 0 || H <= 0) return;
+
+            // Berechnungslogik
+            let logoWidth;
+            let ruleText;
+            if (B < H) {
+                logoWidth = B * 0.7;
+                ruleText = `B < H (LogoBreite = B x 0,7)`;
+            } else {
+                logoWidth = H * 0.7;
+                ruleText = `B >= H (LogoBreite = H x 0,7)`;
+            }
+
+            // Fläche
+            const area = (B * H) / 10000; // in m²
+
+            // UI Update
+            resultsDiv.innerHTML = `
+                <div><strong>Fläche:</strong> ${area.toLocaleString('de-DE', {minimumFractionDigits: 2})} m² <span class="derivation">(Herleitung: ${B}cm x ${H}cm / 10.000)</span></div>
+                <div><strong>Logo-Breite:</strong> ${logoWidth.toFixed(2)} cm <span class="derivation">(Herleitung: ${ruleText})</span></div>
+            `;
+
+            // Visualisierung skalieren
+            // Wir nutzen max 90% des Preview-Containers für die Fläche
+            const container = document.getElementById('preview-container');
+            const maxW = container.clientWidth * 0.9;
+            const maxH = container.clientHeight * 0.9;
+            
+            const ratio = Math.min(maxW / B, maxH / H);
+            
+            surface.style.width = (B * ratio) + 'px';
+            surface.style.height = (H * ratio) + 'px';
+            
+            // Logo Breite relativ zur Fläche
+            const logoVisualWidth = (logoWidth / B) * 100;
+            logoImg.style.width = logoVisualWidth + '%';
+        }
+
+        // Initial beim Laden
+        window.onload = calculate;
+    </script>
+</body>
+</html>
