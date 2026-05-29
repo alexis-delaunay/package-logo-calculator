@@ -10,10 +10,19 @@
             background-color: #f5f5f7;
             color: #1d1d1f;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
             padding: 40px 20px;
             margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            gap: 30px;
         }
         .container {
             background: white;
@@ -22,7 +31,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             width: 100%;
             max-width: 500px;
-            margin-bottom: 40px;
+            box-sizing: border-box;
         }
         h1 { font-size: 24px; margin-top: 0; text-align: center; color: #00529b; }
         .input-group { margin-bottom: 20px; }
@@ -50,7 +59,6 @@
         
         #preview-container {
             width: 100%;
-            max-width: 800px;
             height: 450px;
             background: #e5e5e5;
             border-radius: 12px;
@@ -60,7 +68,24 @@
             overflow: hidden;
             position: relative;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
-            padding: 20px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* Split-Screen Layout für Desktop */
+        @media (min-width: 1000px) {
+            .main-layout {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+            }
+            .container {
+                flex: 0 0 400px;
+            }
+            #preview-container {
+                flex: 1;
+                height: 600px;
+            }
         }
         #surface {
             background: white;
@@ -92,35 +117,36 @@
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>KSB Logo Rechner</h1>
-        
-        <div class="input-group">
-            <label for="width-b">Flächen-Breite (B) in cm</label>
-            <input type="number" id="width-b" value="100" min="1" oninput="calculate()">
-        </div>
-        
-        <div class="input-group">
-            <label for="height-h">Flächen-Höhe (H) in cm</label>
-            <input type="number" id="height-h" value="80" min="1" oninput="calculate()">
-        </div>
-
-        <div class="results" id="results">
-            <!-- Ergebnisse erscheinen hier -->
-        </div>
-    </div>
-
-    <div id="preview-container">
-        <div id="surface">
-            <div class="logo-wrapper" id="logo-container">
-                <img src="ksb-logo.png" id="logo-img" alt="KSB Logo" style="width: 100%; height: auto; display: block;">
-                <div id="logo-error" style="display:none; color: #d93025; font-size: 12px; text-align: center; padding: 10px; border: 1px dashed #d93025;">
-                    Datei <b>ksb-logo.png</b> wurde nicht gefunden.<br>Bitte im gleichen Ordner ablegen.
-                </div>
+    <div class="main-layout">
+        <div class="container">
+            <h1>KSB Logo Rechner</h1>
+            
+            <div class="input-group">
+                <label for="width-b">Flächen-Breite (B) in cm</label>
+                <input type="number" id="width-b" value="100" min="1" oninput="calculate()">
             </div>
-            <div class="measure-label label-b" id="display-b">100 cm</div>
-            <div class="measure-label label-h" id="display-h">80 cm</div>
+            
+            <div class="input-group">
+                <label for="height-h">Flächen-Höhe (H) in cm</label>
+                <input type="number" id="height-h" value="80" min="1" oninput="calculate()">
+            </div>
+
+            <div class="results" id="results">
+                <!-- Ergebnisse erscheinen hier -->
+            </div>
+        </div>
+
+        <div id="preview-container">
+            <div id="surface">
+                <div class="logo-wrapper" id="logo-container">
+                    <img src="ksb-logo.png" id="logo-img" alt="KSB Logo" style="width: 100%; height: auto; display: block;">
+                    <div id="logo-error" style="display:none; color: #d93025; font-size: 12px; text-align: center; padding: 10px; border: 1px dashed #d93025;">
+                        Datei <b>ksb-logo.png</b> wurde nicht gefunden.<br>Bitte im gleichen Ordner ablegen.
+                    </div>
+                </div>
+                <div class="measure-label label-b" id="display-b">100 cm</div>
+                <div class="measure-label label-h" id="display-h">80 cm</div>
+            </div>
         </div>
     </div>
 
