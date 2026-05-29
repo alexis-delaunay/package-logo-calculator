@@ -80,14 +80,84 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            padding: 40px;
+            padding: 30px;
             min-height: 500px;
             box-sizing: border-box;
             position: relative;
-            overflow: auto;
+            overflow: hidden;
         }
 
-        .view-header { font-weight: 600; color: var(--text-secondary); font-size: 12px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--bg-gray);
+            padding-bottom: 10px;
+        }
+        .tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: var(--ksb-blue);
+            color: white;
+        }
+
+        .view-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .view-section {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        .view-section.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 3D Box Styles */
+        .scene {
+            width: 300px;
+            height: 300px;
+            perspective: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cube {
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(45deg);
+            transition: transform 0.1s;
+        }
+        .face {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+        .face img {
+            display: block;
+        }
+        /* Top face is cardboard color */
+        .face-top { background: #e3cbb3; }
+        .face-bottom { background: #d2b48c; }
 
         .surfaces-container {
             display: flex;
@@ -178,26 +248,45 @@
 
         <!-- Vorschau -->
         <div class="preview-pane">
-            <div class="view-header">Maßstabsgetreue Blueprint-Ansicht (mm)</div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('2d')">2D Blueprint</div>
+                <div class="tab" onclick="switchTab('3d')">3D Vorschau</div>
+            </div>
             
-            <div class="surfaces-container">
-                <!-- Fläche 1 -->
-                <div class="surface-box">
-                    <div class="surface-title">Seite B x H</div>
-                    <div class="surface" id="surf-bh">
-                        <img src="ksb-logo.png" id="logo1" class="logo-img">
-                        <div class="dim dim-w" id="dim-bh-w">0 mm</div>
-                        <div class="dim dim-h" id="dim-bh-h">0 mm</div>
+            <div class="view-content">
+                <!-- 2D View -->
+                <div id="view-2d" class="view-section active">
+                    <div class="surfaces-container">
+                        <div class="surface-box">
+                            <div class="surface-title">Seite B x H</div>
+                            <div class="surface" id="surf-bh">
+                                <img src="ksb-logo.png" id="logo1" class="logo-img">
+                                <div class="dim dim-w" id="dim-bh-w">0 mm</div>
+                                <div class="dim dim-h" id="dim-bh-h">0 mm</div>
+                            </div>
+                        </div>
+                        <div class="surface-box">
+                            <div class="surface-title">Seite L x H</div>
+                            <div class="surface" id="surf-lh">
+                                <img src="ksb-logo.png" id="logo2" class="logo-img">
+                                <div class="dim dim-w" id="dim-lh-w">0 mm</div>
+                                <div class="dim dim-h" id="dim-lh-h">0 mm</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Fläche 2 -->
-                <div class="surface-box">
-                    <div class="surface-title">Seite L x H</div>
-                    <div class="surface" id="surf-lh">
-                        <img src="ksb-logo.png" id="logo2" class="logo-img">
-                        <div class="dim dim-w" id="dim-lh-w">0 mm</div>
-                        <div class="dim dim-h" id="dim-lh-h">0 mm</div>
+                <!-- 3D View -->
+                <div id="view-3d" class="view-section">
+                    <div class="scene">
+                        <div class="cube" id="cube">
+                            <div class="face face-front"><img src="ksb-logo.png" class="logo3d"></div>
+                            <div class="face face-back"><img src="ksb-logo.png" class="logo3d"></div>
+                            <div class="face face-right"><img src="ksb-logo.png" class="logo3d"></div>
+                            <div class="face face-left"><img src="ksb-logo.png" class="logo3d"></div>
+                            <div class="face face-top"></div>
+                            <div class="face face-bottom"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -205,6 +294,18 @@
     </div>
 
     <script>
+        let currentTab = '2d';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('view-' + tab).classList.add('active');
+            draw();
+        }
+
         function draw() {
             const L = parseFloat(document.getElementById('in-l').value) || 0;
             const B = parseFloat(document.getElementById('in-b').value) || 0;
@@ -212,7 +313,7 @@
 
             if (L <= 0 || B <= 0 || H <= 0) return;
 
-            // Berechnung Logo-Breite (Regel: B vs H)
+            // Berechnung Logo-Breite
             let logoW;
             let rule;
             if (B < H) {
@@ -223,7 +324,7 @@
                 rule = `B >= H → ${H}mm * 0,7`;
             }
 
-            // UI Update Texte
+            // Texte updaten
             document.getElementById('res-logo-w').innerText = logoW.toFixed(1) + " mm";
             document.getElementById('res-logo-der').innerText = `Herleitung: ${rule} = ${logoW.toFixed(1)}mm`;
             
@@ -234,39 +335,74 @@
             document.getElementById('res-area-lh').innerText = aLH.toLocaleString('de-DE', {minimumFractionDigits:2}) + " dm²";
             document.getElementById('res-area-lh-der').innerText = `Herleitung: ${L} * ${H} mm²`;
 
-            // Dimensionen Beschriftung
-            document.getElementById('dim-bh-w').innerText = B + " mm";
-            document.getElementById('dim-bh-h').innerText = H + " mm";
-            document.getElementById('dim-lh-w').innerText = L + " mm";
-            document.getElementById('dim-lh-h').innerText = H + " mm";
+            // 2D Logic
+            if (currentTab === '2d') {
+                document.getElementById('dim-bh-w').innerText = B + " mm";
+                document.getElementById('dim-bh-h').innerText = H + " mm";
+                document.getElementById('dim-lh-w').innerText = L + " mm";
+                document.getElementById('dim-lh-h').innerText = H + " mm";
 
-            // Scaling Logic
-            const pane = document.querySelector('.preview-pane');
-            const availW = pane.clientWidth - 200; // Abzug für Paddings/Abstände
-            const availH = pane.clientHeight - 200;
-            
-            // Gesamtbreite beider Boxen + Gap (60px)
-            const totalModelW = B + L + 60;
-            const totalModelH = H;
-            
-            const ratio = Math.min(availW / totalModelW, availH / totalModelH);
+                const pane = document.querySelector('.preview-pane');
+                const availW = pane.clientWidth - 100;
+                const availH = pane.clientHeight - 150;
+                const ratio = Math.min(availW / (B + L + 60), availH / H);
 
-            // Flächen anpassen
-            const sBH = document.getElementById('surf-bh');
-            const sLH = document.getElementById('surf-lh');
-            sBH.style.width = (B * ratio) + 'px';
-            sBH.style.height = (H * ratio) + 'px';
-            sLH.style.width = (L * ratio) + 'px';
-            sLH.style.height = (H * ratio) + 'px';
+                const sBH = document.getElementById('surf-bh');
+                const sLH = document.getElementById('surf-lh');
+                sBH.style.width = (B * ratio) + 'px';
+                sBH.style.height = (H * ratio) + 'px';
+                sLH.style.width = (L * ratio) + 'px';
+                sLH.style.height = (H * ratio) + 'px';
 
-            // Logo anpassen
-            const visualLogoW = logoW * ratio;
-            document.getElementById('logo1').style.width = visualLogoW + 'px';
-            document.getElementById('logo2').style.width = visualLogoW + 'px';
+                const visualLogoW = logoW * ratio;
+                document.getElementById('logo1').style.width = visualLogoW + 'px';
+                document.getElementById('logo2').style.width = visualLogoW + 'px';
+                sLH.style.borderColor = (logoW > L) ? "#d93025" : "#333";
+            }
 
-            // Warnung wenn Logo > Fläche L
-            sLH.style.borderColor = (logoW > L) ? "#d93025" : "#333";
-            sLH.style.boxShadow = (logoW > L) ? "10px 10px 0px rgba(217,48,37,0.1)" : "10px 10px 0px rgba(0,0,0,0.05)";
+            // 3D Logic
+            if (currentTab === '3d') {
+                const cube = document.getElementById('cube');
+                const faces = cube.querySelectorAll('.face');
+                
+                // Scale factors for 3D (to fit 300px scene)
+                const maxDim = Math.max(L, B, H);
+                const scale = 200 / maxDim;
+                
+                const w = L * scale;
+                const h = H * scale;
+                const d = B * scale;
+
+                // Set dimensions of faces
+                const fFront = cube.querySelector('.face-front');
+                const fBack = cube.querySelector('.face-back');
+                const fRight = cube.querySelector('.face-right');
+                const fLeft = cube.querySelector('.face-left');
+                const fTop = cube.querySelector('.face-top');
+                const fBottom = cube.querySelector('.face-bottom');
+
+                fFront.style.width = w + 'px'; fFront.style.height = h + 'px';
+                fBack.style.width = w + 'px'; fBack.style.height = h + 'px';
+                fRight.style.width = d + 'px'; fRight.style.height = h + 'px';
+                fLeft.style.width = d + 'px'; fLeft.style.height = h + 'px';
+                fTop.style.width = w + 'px'; fTop.style.height = d + 'px';
+                fBottom.style.width = w + 'px'; fBottom.style.height = d + 'px';
+
+                // Position faces
+                fFront.style.transform = `rotateY(0deg) translateZ(${d/2}px)`;
+                fBack.style.transform = `rotateY(180deg) translateZ(${d/2}px)`;
+                fRight.style.transform = `rotateY(90deg) translateZ(${w/2}px)`;
+                fLeft.style.transform = `rotateY(-90deg) translateZ(${w/2}px)`;
+                fTop.style.transform = `rotateX(90deg) translateZ(${h/2}px)`;
+                fBottom.style.transform = `rotateX(-90deg) translateZ(${h/2}px)`;
+
+                // Logo in 3D (scale relative to faces)
+                const logo3d = cube.querySelectorAll('.logo3d');
+                const visualLogo3DW = logoW * scale;
+                logo3d.forEach(img => {
+                    img.style.width = visualLogo3DW + 'px';
+                });
+            }
         }
 
         window.onload = draw;
