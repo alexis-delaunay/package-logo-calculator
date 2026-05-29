@@ -3,250 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karton Logo Rechner</title>
+    <title>Karton Logo Rechner - Blueprint</title>
     <style>
+        :root {
+            --ksb-blue: #00529b;
+            --bg-gray: #f0f2f5;
+            --card-bg: #ffffff;
+            --border-color: #d2d2d7;
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            margin: 0;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
-            margin: 0;
             min-height: 100vh;
-            box-sizing: border-box;
         }
+
         .main-layout {
             display: flex;
             flex-direction: column;
-            align-items: center;
             width: 100%;
             max-width: 1400px;
-            gap: 30px;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 450px;
+            padding: 20px;
+            gap: 20px;
             box-sizing: border-box;
         }
-        h1 { font-size: 22px; margin-top: 0; text-align: center; color: #00529b; }
-        .input-row { display: flex; gap: 15px; margin-bottom: 20px; }
-        .input-group { flex: 1; }
-        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
+
+        /* Sidebar / Input */
+        .sidebar {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            align-self: flex-start;
+        }
+
+        h1 { font-size: 20px; color: var(--ksb-blue); margin: 0 0 20px 0; border-bottom: 1px solid var(--bg-gray); padding-bottom: 10px; }
+        
+        .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
         input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             box-sizing: border-box;
-            outline: none;
+            background: #fdfdfd;
         }
-        input:focus { border-color: #00529b; box-shadow: 0 0 0 3px rgba(0,82,155,0.1); }
+        input:focus { border-color: var(--ksb-blue); outline: none; box-shadow: 0 0 0 3px rgba(0,82,155,0.1); }
+
         .results {
-            background: #fbfbfd;
-            padding: 15px;
+            background: #f8f9fa;
             border-radius: 12px;
-            margin-top: 20px;
-            font-size: 13px;
-            line-height: 1.6;
-            border-left: 4px solid #00529b;
+            padding: 16px;
+            border-left: 4px solid var(--ksb-blue);
         }
-        .derivation { color: #86868b; font-size: 11px; display: block; margin-top: 2px; }
-        
-        #preview-container {
-            width: 100%;
+        .result-item { margin-bottom: 12px; }
+        .result-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
+        .result-value { font-size: 16px; font-weight: 700; }
+        .derivation { font-size: 10px; color: #999; font-style: italic; display: block; }
+
+        /* Preview Area */
+        .preview-pane {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
             min-height: 500px;
-            background: #e5e5e5;
-            border-radius: 12px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: auto;
+        }
+
+        .view-header { font-weight: 600; color: var(--text-secondary); font-size: 12px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .surfaces-container {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: auto;
+        }
+
+        .surface-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 40px;
-            padding: 50px;
-            box-sizing: border-box;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            gap: 15px;
         }
 
-        .surfaces-wrapper {
-            display: flex;
-            gap: 20px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        .surface-title { font-size: 12px; font-weight: 700; color: var(--ksb-blue); background: #eef4f9; padding: 4px 12px; border-radius: 20px; }
 
         .surface {
-            background: white;
-            border: 1px solid #999;
+            background: #fff;
+            border: 1px solid #333;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.2s ease-out;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.05);
         }
 
-        .logo-img {
-            display: block;
-            pointer-events: none;
-        }
+        .logo-img { display: block; max-width: none; }
 
-        .measure-label {
-            position: absolute;
-            font-size: 10px;
-            color: #666;
-            white-space: nowrap;
-        }
-        .label-b { bottom: -20px; left: 50%; transform: translateX(-50%); }
-        .label-h { right: -40px; top: 50%; transform: translateY(-50%) rotate(90deg); }
-        .surface-title {
-            position: absolute;
-            top: -25px;
-            left: 0;
-            font-size: 11px;
-            font-weight: bold;
-            color: #00529b;
-        }
+        /* Dimensions */
+        .dim { position: absolute; font-size: 11px; color: #666; font-family: monospace; }
+        .dim-w { bottom: -22px; width: 100%; text-align: center; border-top: 1px solid #ccc; padding-top: 4px; }
+        .dim-h { right: -50px; height: 100%; display: flex; align-items: center; border-left: 1px solid #ccc; padding-left: 8px; }
 
-        @media (min-width: 1100px) {
-            .main-layout { flex-direction: row; align-items: flex-start; }
-            .container { flex: 0 0 400px; }
-            #preview-container { flex: 1; height: 650px; }
+        @media (min-width: 1000px) {
+            .main-layout { flex-direction: row; align-items: stretch; height: calc(100vh - 40px); }
+            .sidebar { width: 380px; flex-shrink: 0; }
+            .preview-pane { height: 100%; }
         }
 
         @media (max-width: 600px) {
-            #preview-container { padding: 40px 20px; }
-            .surfaces-wrapper { gap: 40px; }
+            .preview-pane { padding: 20px; }
+            .surfaces-container { gap: 80px; }
         }
     </style>
 </head>
 <body>
     <div class="main-layout">
-        <div class="container">
-            <h1>Karton Logo Platzierung</h1>
+        <!-- Eingabe -->
+        <div class="sidebar">
+            <h1>Logo Rechner</h1>
             
             <div class="input-row">
                 <div class="input-group">
-                    <label for="len-l">Länge (L) mm</label>
-                    <input type="number" id="len-l" value="400" min="1" oninput="calculate()">
+                    <label>Länge (L)</label>
+                    <input type="number" id="in-l" value="400" oninput="draw()">
                 </div>
                 <div class="input-group">
-                    <label for="width-b">Breite (B) mm</label>
-                    <input type="number" id="width-b" value="300" min="1" oninput="calculate()">
+                    <label>Breite (B)</label>
+                    <input type="number" id="in-b" value="300" oninput="draw()">
                 </div>
                 <div class="input-group">
-                    <label for="height-h">Höhe (H) mm</label>
-                    <input type="number" id="height-h" value="250" min="1" oninput="calculate()">
+                    <label>Höhe (H)</label>
+                    <input type="number" id="in-h" value="250" oninput="draw()">
                 </div>
             </div>
 
-            <div class="results" id="results">
-                <!-- Ergebnisse -->
+            <div class="results">
+                <div class="result-item">
+                    <div class="result-label">Logo-Breite</div>
+                    <div class="result-value" id="res-logo-w">0 mm</div>
+                    <span class="derivation" id="res-logo-der"></span>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Fläche B x H</div>
+                    <div class="result-value" id="res-area-bh">0 dm²</div>
+                    <span class="derivation" id="res-area-bh-der"></span>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Fläche L x H</div>
+                    <div class="result-value" id="res-area-lh">0 dm²</div>
+                    <span class="derivation" id="res-area-lh-der"></span>
+                </div>
             </div>
         </div>
 
-        <div id="preview-container">
-            <div class="surfaces-wrapper">
-                <!-- Fläche B x H -->
-                <div id="surface-bh" class="surface">
-                    <span class="surface-title">Fläche B x H</span>
-                    <img src="ksb-logo.png" class="logo-img" id="logo-bh" alt="Logo">
-                    <div class="measure-label label-b" id="lbl-b">300 mm</div>
-                    <div class="measure-label label-h" id="lbl-h1">250 mm</div>
+        <!-- Vorschau -->
+        <div class="preview-pane">
+            <div class="view-header">Maßstabsgetreue Blueprint-Ansicht (mm)</div>
+            
+            <div class="surfaces-container">
+                <!-- Fläche 1 -->
+                <div class="surface-box">
+                    <div class="surface-title">Seite B x H</div>
+                    <div class="surface" id="surf-bh">
+                        <img src="ksb-logo.png" id="logo1" class="logo-img">
+                        <div class="dim dim-w" id="dim-bh-w">0 mm</div>
+                        <div class="dim dim-h" id="dim-bh-h">0 mm</div>
+                    </div>
                 </div>
 
-                <!-- Fläche L x H -->
-                <div id="surface-lh" class="surface">
-                    <span class="surface-title">Fläche L x H</span>
-                    <img src="ksb-logo.png" class="logo-img" id="logo-lh" alt="Logo">
-                    <div class="measure-label label-b" id="lbl-l">400 mm</div>
-                    <div class="measure-label label-h" id="lbl-h2">250 mm</div>
+                <!-- Fläche 2 -->
+                <div class="surface-box">
+                    <div class="surface-title">Seite L x H</div>
+                    <div class="surface" id="surf-lh">
+                        <img src="ksb-logo.png" id="logo2" class="logo-img">
+                        <div class="dim dim-w" id="dim-lh-w">0 mm</div>
+                        <div class="dim dim-h" id="dim-lh-h">0 mm</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function calculate() {
-            const L = parseFloat(document.getElementById('len-l').value) || 0;
-            const B = parseFloat(document.getElementById('width-b').value) || 0;
-            const H = parseFloat(document.getElementById('height-h').value) || 0;
-            
-            const resultsDiv = document.getElementById('results');
-            const surfBH = document.getElementById('surface-bh');
-            const surfLH = document.getElementById('surface-lh');
-            const logoBH = document.getElementById('logo-bh');
-            const logoLH = document.getElementById('logo-lh');
+        function draw() {
+            const L = parseFloat(document.getElementById('in-l').value) || 0;
+            const B = parseFloat(document.getElementById('in-b').value) || 0;
+            const H = parseFloat(document.getElementById('in-h').value) || 0;
 
             if (L <= 0 || B <= 0 || H <= 0) return;
 
-            // 1. Logo-Breite berechnen (Nur B und H relevant)
-            let logoWidth;
-            let ruleText;
+            // Berechnung Logo-Breite (Regel: B vs H)
+            let logoW;
+            let rule;
             if (B < H) {
-                logoWidth = B * 0.7;
-                ruleText = `B < H (B=${B}, H=${H}) → LogoBreite = B x 0,7 = ${B} x 0,7`;
+                logoW = B * 0.7;
+                rule = `B < H → ${B}mm * 0,7`;
             } else {
-                logoWidth = H * 0.7;
-                ruleText = `B >= H (B=${B}, H=${H}) → LogoBreite = H x 0,7 = ${H} x 0,7`;
+                logoW = H * 0.7;
+                rule = `B >= H → ${H}mm * 0,7`;
             }
 
-            // 2. Flächeninhalte (Herleitung in de-DE)
-            const areaBH = (B * H) / 100; // in cm²
-            const areaLH = (L * H) / 100; // in cm²
-
-            resultsDiv.innerHTML = `
-                <div><strong>Logo-Breite:</strong> ${logoWidth.toFixed(1)} mm</div>
-                <span class="derivation">Herleitung: ${ruleText} = ${logoWidth.toFixed(1)} mm</span>
-                
-                <div style="margin-top:12px"><strong>Fläche BxH:</strong> ${(areaBH/100).toLocaleString('de-DE', {minimumFractionDigits: 2})} dm²</div>
-                <span class="derivation">Herleitung: ${B}mm x ${H}mm = ${(B*H).toLocaleString('de-DE')} mm²</span>
-
-                <div style="margin-top:8px"><strong>Fläche LxH:</strong> ${(areaLH/100).toLocaleString('de-DE', {minimumFractionDigits: 2})} dm²</div>
-                <span class="derivation">Herleitung: ${L}mm x ${H}mm = ${(L*H).toLocaleString('de-DE')} mm²</span>
-            `;
-
-            // 3. Visualisierung
-            document.getElementById('lbl-l').innerText = L + " mm";
-            document.getElementById('lbl-b').innerText = B + " mm";
-            document.getElementById('lbl-h1').innerText = H + " mm";
-            document.getElementById('lbl-h2').innerText = H + " mm";
-
-            const container = document.getElementById('preview-container');
-            // Wir berechnen den Skalierungsfaktor basierend auf der Gesamtbreite beider Flächen + Gap
-            const totalBoxW = L + B + 20; 
-            const maxW = container.clientWidth - 150;
-            const maxH = container.clientHeight - 150;
+            // UI Update Texte
+            document.getElementById('res-logo-w').innerText = logoW.toFixed(1) + " mm";
+            document.getElementById('res-logo-der').innerText = `Herleitung: ${rule} = ${logoW.toFixed(1)}mm`;
             
-            const ratio = Math.min(maxW / totalBoxW, maxH / Math.max(H, 100));
+            const aBH = (B * H) / 10000;
+            const aLH = (L * H) / 10000;
+            document.getElementById('res-area-bh').innerText = aBH.toLocaleString('de-DE', {minimumFractionDigits:2}) + " dm²";
+            document.getElementById('res-area-bh-der').innerText = `Herleitung: ${B} * ${H} mm²`;
+            document.getElementById('res-area-lh').innerText = aLH.toLocaleString('de-DE', {minimumFractionDigits:2}) + " dm²";
+            document.getElementById('res-area-lh-der').innerText = `Herleitung: ${L} * ${H} mm²`;
 
-            // Flächen skalieren
-            surfBH.style.width = (B * ratio) + 'px';
-            surfBH.style.height = (H * ratio) + 'px';
-            surfLH.style.width = (L * ratio) + 'px';
-            surfLH.style.height = (H * ratio) + 'px';
+            // Dimensionen Beschriftung
+            document.getElementById('dim-bh-w').innerText = B + " mm";
+            document.getElementById('dim-bh-h').innerText = H + " mm";
+            document.getElementById('dim-lh-w').innerText = L + " mm";
+            document.getElementById('dim-lh-h').innerText = H + " mm";
 
-            // Logo-Größe (identisch für beide)
-            const logoVisualWidth = logoWidth * ratio;
-            logoBH.style.width = logoVisualWidth + 'px';
-            logoLH.style.width = logoVisualWidth + 'px';
+            // Scaling Logic
+            const pane = document.querySelector('.preview-pane');
+            const availW = pane.clientWidth - 200; // Abzug für Paddings/Abstände
+            const availH = pane.clientHeight - 200;
             
-            // Fehlermeldung falls Logo zu breit für Fläche L
-            if (logoWidth > L) {
-                surfLH.style.borderColor = 'red';
-            } else {
-                surfLH.style.borderColor = '#999';
-            }
+            // Gesamtbreite beider Boxen + Gap (60px)
+            const totalModelW = B + L + 60;
+            const totalModelH = H;
+            
+            const ratio = Math.min(availW / totalModelW, availH / totalModelH);
+
+            // Flächen anpassen
+            const sBH = document.getElementById('surf-bh');
+            const sLH = document.getElementById('surf-lh');
+            sBH.style.width = (B * ratio) + 'px';
+            sBH.style.height = (H * ratio) + 'px';
+            sLH.style.width = (L * ratio) + 'px';
+            sLH.style.height = (H * ratio) + 'px';
+
+            // Logo anpassen
+            const visualLogoW = logoW * ratio;
+            document.getElementById('logo1').style.width = visualLogoW + 'px';
+            document.getElementById('logo2').style.width = visualLogoW + 'px';
+
+            // Warnung wenn Logo > Fläche L
+            sLH.style.borderColor = (logoW > L) ? "#d93025" : "#333";
+            sLH.style.boxShadow = (logoW > L) ? "10px 10px 0px rgba(217,48,37,0.1)" : "10px 10px 0px rgba(0,0,0,0.05)";
         }
 
-        window.onload = calculate;
-        window.onresize = calculate;
+        window.onload = draw;
+        window.onresize = draw;
     </script>
 </body>
 </html>
