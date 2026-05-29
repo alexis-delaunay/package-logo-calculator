@@ -129,9 +129,9 @@
 
         /* 3D Box Styles */
         .scene {
-            width: 300px;
-            height: 300px;
-            perspective: 1000px;
+            width: 100%;
+            height: 100%;
+            perspective: 1200px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -139,18 +139,20 @@
         .cube {
             position: relative;
             transform-style: preserve-3d;
-            transform: rotateX(-20deg) rotateY(45deg);
+            transform: rotateX(-25deg) rotateY(45deg);
             transition: transform 0.1s;
+            width: 0;
+            height: 0;
         }
         .face {
             position: absolute;
-            background: #d2b48c; /* Grundfarbe Karton */
-            border: 1px solid #b89a74;
+            background: #d2b48c;
+            border: 1px solid rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
             backface-visibility: visible;
         }
         .face img {
@@ -368,17 +370,15 @@
             // 3D Logic
             if (currentTab === '3d') {
                 const cube = document.getElementById('cube');
-                const faces = cube.querySelectorAll('.face');
                 
                 // Scale factors for 3D (to fit 300px scene)
                 const maxDim = Math.max(L, B, H);
-                const scale = 200 / maxDim;
+                const scale = 250 / maxDim;
                 
                 const w = L * scale;
                 const h = H * scale;
                 const d = B * scale;
 
-                // Set dimensions of faces
                 const fFront = cube.querySelector('.face-front');
                 const fBack = cube.querySelector('.face-back');
                 const fRight = cube.querySelector('.face-right');
@@ -386,22 +386,23 @@
                 const fTop = cube.querySelector('.face-top');
                 const fBottom = cube.querySelector('.face-bottom');
 
-                fFront.style.width = w + 'px'; fFront.style.height = h + 'px';
-                fBack.style.width = w + 'px'; fBack.style.height = h + 'px';
-                fRight.style.width = d + 'px'; fRight.style.height = h + 'px';
-                fLeft.style.width = d + 'px'; fLeft.style.height = h + 'px';
-                fTop.style.width = w + 'px'; fTop.style.height = d + 'px';
-                fBottom.style.width = w + 'px'; fBottom.style.height = d + 'px';
+                // Hilfsfunktion zum Setzen von Maßen und Position
+                const setFace = (face, width, height, transform) => {
+                    face.style.width = width + 'px';
+                    face.style.height = height + 'px';
+                    face.style.left = (-width / 2) + 'px';
+                    face.style.top = (-height / 2) + 'px';
+                    face.style.transform = transform;
+                };
 
-                // Position faces
-                fFront.style.transform = `rotateY(0deg) translateZ(${d/2}px)`;
-                fBack.style.transform = `rotateY(180deg) translateZ(${d/2}px)`;
-                fRight.style.transform = `rotateY(90deg) translateZ(${w/2}px)`;
-                fLeft.style.transform = `rotateY(-90deg) translateZ(${w/2}px)`;
-                fTop.style.transform = `rotateX(90deg) translateZ(${h/2}px)`;
-                fBottom.style.transform = `rotateX(-90deg) translateZ(${h/2}px)`;
+                setFace(fFront, w, h, `rotateY(0deg) translateZ(${d/2}px)`);
+                setFace(fBack, w, h, `rotateY(180deg) translateZ(${d/2}px)`);
+                setFace(fRight, d, h, `rotateY(90deg) translateZ(${w/2}px)`);
+                setFace(fLeft, d, h, `rotateY(-90deg) translateZ(${w/2}px)`);
+                setFace(fTop, w, d, `rotateX(90deg) translateZ(${h/2}px)`);
+                setFace(fBottom, w, d, `rotateX(-90deg) translateZ(${h/2}px)`);
 
-                // Logo in 3D (scale relative to faces)
+                // Logo in 3D
                 const logo3d = cube.querySelectorAll('.logo3d');
                 const visualLogo3DW = logoW * scale;
                 logo3d.forEach(img => {
