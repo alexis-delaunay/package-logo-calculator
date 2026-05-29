@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KSB Logo Rechner</title>
+    <title>Karton Logo Rechner</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -21,7 +21,7 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             gap: 30px;
         }
         .container {
@@ -30,15 +30,16 @@
             border-radius: 18px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
             box-sizing: border-box;
         }
-        h1 { font-size: 24px; margin-top: 0; text-align: center; color: #00529b; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        h1 { font-size: 22px; margin-top: 0; text-align: center; color: #00529b; }
+        .input-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .input-group { flex: 1; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
         input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #d2d2d7;
             border-radius: 8px;
             font-size: 16px;
@@ -51,191 +52,199 @@
             padding: 15px;
             border-radius: 12px;
             margin-top: 20px;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
             border-left: 4px solid #00529b;
         }
-        .derivation { color: #86868b; font-size: 12px; display: block; margin-top: 2px; }
+        .derivation { color: #86868b; font-size: 11px; display: block; margin-top: 2px; }
         
         #preview-container {
             width: 100%;
-            height: 400px;
+            min-height: 500px;
             background: #e5e5e5;
             border-radius: 12px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
-            padding: 40px;
+            gap: 40px;
+            padding: 50px;
             box-sizing: border-box;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        /* Mobile Optimierungen */
-        @media (max-width: 600px) {
-            body {
-                padding: 20px 10px;
-            }
-            .container {
-                padding: 20px;
-            }
-            #preview-container {
-                height: 350px;
-                padding: 30px;
-            }
-            h1 {
-                font-size: 20px;
-            }
-            .main-layout {
-                gap: 20px;
-            }
+        .surfaces-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        /* Split-Screen Layout für Desktop */
-        @media (min-width: 1000px) {
-            .main-layout {
-                flex-direction: row;
-                align-items: flex-start;
-                justify-content: center;
-            }
-            .container {
-                flex: 0 0 400px;
-            }
-            #preview-container {
-                flex: 1;
-                height: 600px;
-            }
-        }
-        #surface {
+        .surface {
             background: white;
             border: 1px solid #999;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: all 0.2s ease-out;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-out;
         }
-        .logo-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
+
+        .logo-img {
+            display: block;
+            pointer-events: none;
         }
-        #logo-svg {
-            width: 100%;
-            height: auto;
-        }
+
         .measure-label {
             position: absolute;
             font-size: 10px;
             color: #666;
+            white-space: nowrap;
         }
-        .label-b { bottom: -20px; width: 100%; text-align: center; }
-        .label-h { right: -40px; top: 50%; transform: translateY(-50%) rotate(90deg); white-space: nowrap; }
+        .label-b { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .label-h { right: -40px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+        .surface-title {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            font-size: 11px;
+            font-weight: bold;
+            color: #00529b;
+        }
+
+        @media (min-width: 1100px) {
+            .main-layout { flex-direction: row; align-items: flex-start; }
+            .container { flex: 0 0 400px; }
+            #preview-container { flex: 1; height: 650px; }
+        }
+
+        @media (max-width: 600px) {
+            #preview-container { padding: 40px 20px; }
+            .surfaces-wrapper { gap: 40px; }
+        }
     </style>
 </head>
 <body>
     <div class="main-layout">
         <div class="container">
-            <h1>KSB Logo Rechner</h1>
+            <h1>Karton Logo Platzierung</h1>
             
-            <div class="input-group">
-                <label for="width-b">Flächen-Breite (B) in cm</label>
-                <input type="number" id="width-b" value="100" min="1" oninput="calculate()">
-            </div>
-            
-            <div class="input-group">
-                <label for="height-h">Flächen-Höhe (H) in cm</label>
-                <input type="number" id="height-h" value="80" min="1" oninput="calculate()">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="len-l">Länge (L) mm</label>
+                    <input type="number" id="len-l" value="400" min="1" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label for="width-b">Breite (B) mm</label>
+                    <input type="number" id="width-b" value="300" min="1" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label for="height-h">Höhe (H) mm</label>
+                    <input type="number" id="height-h" value="250" min="1" oninput="calculate()">
+                </div>
             </div>
 
             <div class="results" id="results">
-                <!-- Ergebnisse erscheinen hier -->
+                <!-- Ergebnisse -->
             </div>
         </div>
 
         <div id="preview-container">
-            <div id="surface">
-                <div class="logo-wrapper" id="logo-container">
-                    <img src="ksb-logo.png" id="logo-img" alt="KSB Logo" style="width: 100%; height: auto; display: block;">
-                    <div id="logo-error" style="display:none; color: #d93025; font-size: 12px; text-align: center; padding: 10px; border: 1px dashed #d93025;">
-                        Datei <b>ksb-logo.png</b> wurde nicht gefunden.<br>Bitte im gleichen Ordner ablegen.
-                    </div>
+            <div class="surfaces-wrapper">
+                <!-- Fläche B x H -->
+                <div id="surface-bh" class="surface">
+                    <span class="surface-title">Fläche B x H</span>
+                    <img src="ksb-logo.png" class="logo-img" id="logo-bh" alt="Logo">
+                    <div class="measure-label label-b" id="lbl-b">300 mm</div>
+                    <div class="measure-label label-h" id="lbl-h1">250 mm</div>
                 </div>
-                <div class="measure-label label-b" id="display-b">100 cm</div>
-                <div class="measure-label label-h" id="display-h">80 cm</div>
+
+                <!-- Fläche L x H -->
+                <div id="surface-lh" class="surface">
+                    <span class="surface-title">Fläche L x H</span>
+                    <img src="ksb-logo.png" class="logo-img" id="logo-lh" alt="Logo">
+                    <div class="measure-label label-b" id="lbl-l">400 mm</div>
+                    <div class="measure-label label-h" id="lbl-h2">250 mm</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         function calculate() {
+            const L = parseFloat(document.getElementById('len-l').value) || 0;
             const B = parseFloat(document.getElementById('width-b').value) || 0;
             const H = parseFloat(document.getElementById('height-h').value) || 0;
-            const logoContainer = document.getElementById('logo-container');
-            const logoImg = document.getElementById('logo-img');
-            const logoError = document.getElementById('logo-error');
-            const surface = document.getElementById('surface');
+            
             const resultsDiv = document.getElementById('results');
-            const displayB = document.getElementById('display-b');
-            const displayH = document.getElementById('display-h');
+            const surfBH = document.getElementById('surface-bh');
+            const surfLH = document.getElementById('surface-lh');
+            const logoBH = document.getElementById('logo-bh');
+            const logoLH = document.getElementById('logo-lh');
 
-            if (B <= 0 || H <= 0) return;
+            if (L <= 0 || B <= 0 || H <= 0) return;
 
-            // Fehler-Check für das Bild
-            logoImg.onerror = function() {
-                logoImg.style.display = 'none';
-                logoError.style.display = 'block';
-            };
-            logoImg.onload = function() {
-                logoImg.style.display = 'block';
-                logoError.style.display = 'none';
-            };
-
-            // Berechnungslogik laut Vorgabe
+            // 1. Logo-Breite berechnen (Nur B und H relevant)
             let logoWidth;
             let ruleText;
             if (B < H) {
                 logoWidth = B * 0.7;
-                ruleText = `${B} < ${H} (B < H) → LogoBreite = B x 0,7 = ${B} x 0,7`;
+                ruleText = `B < H (B=${B}, H=${H}) → LogoBreite = B x 0,7 = ${B} x 0,7`;
             } else {
                 logoWidth = H * 0.7;
-                ruleText = `${B} >= ${H} (B >= H) → LogoBreite = H x 0,7 = ${H} x 0,7`;
+                ruleText = `B >= H (B=${B}, H=${H}) → LogoBreite = H x 0,7 = ${H} x 0,7`;
             }
 
-            // Fläche berechnen (für Zusatzinfo)
-            const area = (B * H) / 10000;
+            // 2. Flächeninhalte (Herleitung in de-DE)
+            const areaBH = (B * H) / 100; // in cm²
+            const areaLH = (L * H) / 100; // in cm²
 
-            // Ergebnisse anzeigen
             resultsDiv.innerHTML = `
-                <div><strong>Fläche:</strong> ${area.toLocaleString('de-DE', {minimumFractionDigits: 2})} m² <span class="derivation">(Herleitung: ${B}cm x ${H}cm / 10.000)</span></div>
-                <div style="margin-top:8px"><strong>Logo-Breite:</strong> ${logoWidth.toFixed(2)} cm</div>
-                <span class="derivation">Herleitung: ${ruleText} = ${logoWidth.toFixed(2)} cm</span>
+                <div><strong>Logo-Breite:</strong> ${logoWidth.toFixed(1)} mm</div>
+                <span class="derivation">Herleitung: ${ruleText} = ${logoWidth.toFixed(1)} mm</span>
+                
+                <div style="margin-top:12px"><strong>Fläche BxH:</strong> ${(areaBH/100).toLocaleString('de-DE', {minimumFractionDigits: 2})} dm²</div>
+                <span class="derivation">Herleitung: ${B}mm x ${H}mm = ${(B*H).toLocaleString('de-DE')} mm²</span>
+
+                <div style="margin-top:8px"><strong>Fläche LxH:</strong> ${(areaLH/100).toLocaleString('de-DE', {minimumFractionDigits: 2})} dm²</div>
+                <span class="derivation">Herleitung: ${L}mm x ${H}mm = ${(L*H).toLocaleString('de-DE')} mm²</span>
             `;
 
-            // Beschriftung der Vorschau
-            displayB.innerText = B + " cm";
-            displayH.innerText = H + " cm";
+            // 3. Visualisierung
+            document.getElementById('lbl-l').innerText = L + " mm";
+            document.getElementById('lbl-b').innerText = B + " mm";
+            document.getElementById('lbl-h1').innerText = H + " mm";
+            document.getElementById('lbl-h2').innerText = H + " mm";
 
-            // Visualisierung skalieren
             const container = document.getElementById('preview-container');
-            const maxW = container.clientWidth - 80;
-            const maxH = container.clientHeight - 80;
+            // Wir berechnen den Skalierungsfaktor basierend auf der Gesamtbreite beider Flächen + Gap
+            const totalBoxW = L + B + 20; 
+            const maxW = container.clientWidth - 150;
+            const maxH = container.clientHeight - 150;
             
-            const ratio = Math.min(maxW / B, maxH / H);
+            const ratio = Math.min(maxW / totalBoxW, maxH / Math.max(H, 100));
+
+            // Flächen skalieren
+            surfBH.style.width = (B * ratio) + 'px';
+            surfBH.style.height = (H * ratio) + 'px';
+            surfLH.style.width = (L * ratio) + 'px';
+            surfLH.style.height = (H * ratio) + 'px';
+
+            // Logo-Größe (identisch für beide)
+            const logoVisualWidth = logoWidth * ratio;
+            logoBH.style.width = logoVisualWidth + 'px';
+            logoLH.style.width = logoVisualWidth + 'px';
             
-            surface.style.width = (B * ratio) + 'px';
-            surface.style.height = (H * ratio) + 'px';
-            
-            // Logo Breite relativ zur Flächen-Breite (B) setzen
-            // logoWidth ist in cm, B ist in cm. Verhältnis = logoWidth / B
-            const logoVisualWidthPercent = (logoWidth / B) * 100;
-            logoContainer.style.width = logoVisualWidthPercent + '%';
+            // Fehlermeldung falls Logo zu breit für Fläche L
+            if (logoWidth > L) {
+                surfLH.style.borderColor = 'red';
+            } else {
+                surfLH.style.borderColor = '#999';
+            }
         }
 
-        // Initial beim Laden
         window.onload = calculate;
         window.onresize = calculate;
     </script>
