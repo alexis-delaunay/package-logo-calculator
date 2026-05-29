@@ -335,12 +335,12 @@
             document.getElementById('res-logo-w').innerText = logoW.toFixed(1) + " mm";
             document.getElementById('res-logo-der').innerText = `Herleitung: ${rule} = ${logoW.toFixed(1)}mm`;
             
-            const aBH = (B * H) / 10000;
-            const aLH = (L * H) / 10000;
-            document.getElementById('res-area-bh').innerText = aBH.toLocaleString('de-DE', {minimumFractionDigits:2}) + " dm²";
-            document.getElementById('res-area-bh-der').innerText = `Herleitung: ${B} * ${H} mm²`;
-            document.getElementById('res-area-lh').innerText = aLH.toLocaleString('de-DE', {minimumFractionDigits:2}) + " dm²";
-            document.getElementById('res-area-lh-der').innerText = `Herleitung: ${L} * ${H} mm²`;
+            const aBH = B * H;
+            const aLH = L * H;
+            document.getElementById('res-area-bh').innerText = aBH.toLocaleString('de-DE') + " mm²";
+            document.getElementById('res-area-bh-der').innerText = `Herleitung: ${B}mm * ${H}mm = ${aBH.toLocaleString('de-DE')}mm²`;
+            document.getElementById('res-area-lh').innerText = aLH.toLocaleString('de-DE') + " mm²";
+            document.getElementById('res-area-lh-der').innerText = `Herleitung: ${L}mm * ${H}mm = ${aLH.toLocaleString('de-DE')}mm²`;
 
             // 2D Logic
             if (currentTab === '2d') {
