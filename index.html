@@ -243,6 +243,13 @@
                 </div>
             </div>
 
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Logo-Breite (Manuell)</label>
+                <select id="sel-logo-w" onchange="draw()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; background: #fdfdfd;">
+                    <option value="auto">Automatisch berechnen</option>
+                </select>
+            </div>
+
             <div class="results">
                 <div class="result-item">
                     <div class="result-label">Logo-Breite</div>
@@ -311,6 +318,17 @@
 
     <script>
         let currentTab = '2d';
+        const LOGO_SIZES = [26, 37, 52, 74, 105, 210, 248, 250, 297, 385, 420, 594, 841, 1189].sort((a, b) => a - b);
+
+        function initDropdown() {
+            const sel = document.getElementById('sel-logo-w');
+            LOGO_SIZES.forEach(size => {
+                const opt = document.createElement('option');
+                opt.value = size;
+                opt.innerText = size + " mm";
+                sel.appendChild(opt);
+            });
+        }
 
         function switchTab(tab) {
             currentTab = tab;
@@ -326,26 +344,30 @@
             const L = parseFloat(document.getElementById('in-l').value) || 0;
             const B = parseFloat(document.getElementById('in-b').value) || 0;
             const H = parseFloat(document.getElementById('in-h').value) || 0;
+            const manualW = document.getElementById('sel-logo-w').value;
 
             if (L <= 0 || B <= 0 || H <= 0) return;
 
-            // Neue Anforderung: Logo-Breite aus Liste
-            const LOGO_SIZES = [26, 37, 52, 74, 105, 210, 248, 250, 297, 385, 420, 594, 841, 1189].sort((a, b) => a - b);
-            
-            // Die Fläche für das Logo (wir nehmen die kleinere Dimension der Seite BxH als Referenz für die Skalierung)
             const surfaceRef = Math.min(B, H);
-            
-            // Bedingung: Abstand >= 23% der Logobreite -> LogoW * 1.46 <= SurfaceW
-            const maxAllowedW = surfaceRef / 1.46;
-            
-            // Größtmögliche Größe aus der Liste wählen, die die Bedingung erfüllt
-            let logoW = LOGO_SIZES[0];
-            for (let s of LOGO_SIZES) {
-                if (s <= maxAllowedW) {
-                    logoW = s;
-                } else {
-                    break;
+            let logoW;
+            let derivationText = "";
+
+            if (manualW !== "auto") {
+                logoW = parseFloat(manualW);
+                derivationText = `Manuelle Auswahl: ${logoW} mm`;
+            } else {
+                // Automatische Logik (Maximalabstand 23%)
+                const minRequiredW = surfaceRef / 1.46;
+                logoW = LOGO_SIZES[LOGO_SIZES.length - 1]; // Fallback
+                for (let s of LOGO_SIZES) {
+                    if (s >= minRequiredW && s <= surfaceRef) {
+                        logoW = s;
+                        break;
+                    }
                 }
+                const margin = (surfaceRef - logoW) / 2;
+                const marginPercent = (margin / logoW) * 100;
+                derivationText = `Herleitung: Min-Breite = ${surfaceRef}mm / 1,46 = ${minRequiredW.toLocaleString('de-DE', {maximumFractionDigits: 1})}mm. Gewählt: ${logoW}mm (Abstand: ${margin.toLocaleString('de-DE', {maximumFractionDigits: 1})}mm ≈ ${marginPercent.toLocaleString('de-DE', {maximumFractionDigits: 1})}% der Logobreite)`;
             }
 
             // Hilfsfunktion für deutsche Formatierung
@@ -356,9 +378,7 @@
 
             // Texte updaten
             document.getElementById('res-logo-w').innerText = formatDe(logoW) + " mm";
-            const margin = (surfaceRef - logoW) / 2;
-            const marginPercent = (margin / logoW) * 100;
-            document.getElementById('res-logo-der').innerText = `Herleitung: Ref=${surfaceRef}mm / 1,46 = ${formatDe(maxAllowedW, 1)}mm. Gewählt: ${logoW}mm (Abstand: ${formatDe(margin, 1)}mm ≈ ${formatDe(marginPercent, 1)}% der Logobreite)`;
+            document.getElementById('res-logo-der').innerText = derivationText;
             
             const aBH = B * H;
             const aLH = L * H;
@@ -436,7 +456,10 @@
             }
         }
 
-        window.onload = draw;
+        window.onload = () => {
+            initDropdown();
+            draw();
+        };
         window.onresize = draw;
     </script>
 </body>
