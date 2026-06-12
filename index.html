@@ -194,7 +194,29 @@
             box-shadow: 10px 10px 0px rgba(0,0,0,0.05);
         }
 
-        .logo-img { display: block; max-width: none; }
+        .logo-sizes-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .size-chip {
+            padding: 4px 10px;
+            background: #eee;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .size-chip.active {
+            background: var(--ksb-blue);
+            color: white;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        .logo-img { display: block; max-width: none; height: auto; }
+        .logo3d { height: auto; }
 
         /* Dimensions */
         .dim { 
@@ -252,19 +274,14 @@
 
             <div class="results">
                 <div class="result-item">
-                    <div class="result-label">Logo-Breite</div>
+                    <div class="result-label">Ausgewählte Logo-Breite</div>
                     <div class="result-value" id="res-logo-w">0 mm</div>
                     <span class="derivation" id="res-logo-der"></span>
                 </div>
-                <div class="result-item">
-                    <div class="result-label">Fläche B x H</div>
-                    <div class="result-value" id="res-area-bh">0 dm²</div>
-                    <span class="derivation" id="res-area-bh-der"></span>
-                </div>
-                <div class="result-item">
-                    <div class="result-label">Fläche L x H</div>
-                    <div class="result-value" id="res-area-lh">0 dm²</div>
-                    <span class="derivation" id="res-area-lh-der"></span>
+                
+                <div class="result-item" style="margin-top: 20px;">
+                    <div class="result-label">Verfügbare Größen</div>
+                    <div id="size-list" class="logo-sizes-list"></div>
                 </div>
             </div>
         </div>
@@ -322,11 +339,20 @@
 
         function initDropdown() {
             const sel = document.getElementById('sel-logo-w');
+            const list = document.getElementById('size-list');
             LOGO_SIZES.forEach(size => {
+                // Dropdown
                 const opt = document.createElement('option');
                 opt.value = size;
                 opt.innerText = size + " mm";
                 sel.appendChild(opt);
+
+                // Chips
+                const chip = document.createElement('div');
+                chip.className = 'size-chip';
+                chip.id = 'chip-' + size;
+                chip.innerText = size + " mm";
+                list.appendChild(chip);
             });
         }
 
@@ -334,7 +360,7 @@
             currentTab = tab;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            
+
             event.target.classList.add('active');
             document.getElementById('view-' + tab).classList.add('active');
             draw();
@@ -379,13 +405,11 @@
             // Texte updaten
             document.getElementById('res-logo-w').innerText = formatDe(logoW) + " mm";
             document.getElementById('res-logo-der').innerText = derivationText;
-            
-            const aBH = B * H;
-            const aLH = L * H;
-            document.getElementById('res-area-bh').innerText = formatDe(aBH) + " mm²";
-            document.getElementById('res-area-bh-der').innerText = `Herleitung: ${formatDe(B)} mm * ${formatDe(H)} mm = ${formatDe(aBH)} mm²`;
-            document.getElementById('res-area-lh').innerText = formatDe(aLH) + " mm²";
-            document.getElementById('res-area-lh-der').innerText = `Herleitung: ${formatDe(L)} mm * ${formatDe(H)} mm = ${formatDe(aLH)} mm²`;
+
+            // Chips hervorheben
+            document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
+            const activeChip = document.getElementById('chip-' + logoW);
+            if (activeChip) activeChip.classList.add('active');
 
             // 2D Logic
             if (currentTab === '2d') {
