@@ -320,15 +320,23 @@
 
             if (L <= 0 || B <= 0 || H <= 0) return;
 
-            // Berechnung Logo-Breite
-            let logoW;
-            let rule;
-            if (B < H) {
-                logoW = B * 0.7;
-                rule = `B < H → ${B}mm * 0,7`;
-            } else {
-                logoW = H * 0.7;
-                rule = `B >= H → ${H}mm * 0,7`;
+            // Neue Anforderung: Logo-Breite aus Liste
+            const LOGO_SIZES = [26, 37, 52, 74, 105, 210, 248, 250, 297, 385, 420, 594, 841, 1189].sort((a, b) => a - b);
+            
+            // Die Fläche für das Logo (wir nehmen die kleinere Dimension der Seite BxH als Referenz für die Skalierung)
+            const surfaceRef = Math.min(B, H);
+            
+            // Bedingung: Abstand >= 23% der Logobreite -> LogoW * 1.46 <= SurfaceW
+            const maxAllowedW = surfaceRef / 1.46;
+            
+            // Größtmögliche Größe aus der Liste wählen, die die Bedingung erfüllt
+            let logoW = LOGO_SIZES[0];
+            for (let s of LOGO_SIZES) {
+                if (s <= maxAllowedW) {
+                    logoW = s;
+                } else {
+                    break;
+                }
             }
 
             // Hilfsfunktion für deutsche Formatierung
@@ -338,8 +346,10 @@
             });
 
             // Texte updaten
-            document.getElementById('res-logo-w').innerText = formatDe(logoW, 1) + " mm";
-            document.getElementById('res-logo-der').innerText = `Herleitung: ${rule.replace('.', ',')} = ${formatDe(logoW, 1)} mm`;
+            document.getElementById('res-logo-w').innerText = formatDe(logoW) + " mm";
+            const margin = (surfaceRef - logoW) / 2;
+            const marginPercent = (margin / logoW) * 100;
+            document.getElementById('res-logo-der').innerText = `Herleitung: Ref=${surfaceRef}mm / 1,46 = ${formatDe(maxAllowedW, 1)}mm. Gewählt: ${logoW}mm (Abstand: ${formatDe(margin, 1)}mm ≈ ${formatDe(marginPercent, 1)}% der Logobreite)`;
             
             const aBH = B * H;
             const aLH = L * H;
