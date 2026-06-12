@@ -197,7 +197,16 @@
         .logo-img { display: block; max-width: none; }
 
         /* Dimensions */
-        .dim { position: absolute; font-size: 11px; color: #666; font-family: monospace; }
+        .dim { 
+            position: absolute; 
+            font-size: 11px; 
+            color: #666; 
+            font-family: monospace; 
+            opacity: 0; 
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: none;
+        }
+        .surface:hover .dim { opacity: 1; }
         .dim-w { bottom: -22px; width: 100%; text-align: center; border-top: 1px solid #ccc; padding-top: 4px; }
         .dim-h { right: -50px; height: 100%; display: flex; align-items: center; border-left: 1px solid #ccc; padding-left: 8px; }
 
