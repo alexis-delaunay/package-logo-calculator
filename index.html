@@ -207,13 +207,18 @@
             font-size: 12px;
             color: #666;
             transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid transparent;
         }
+        .size-chip:hover { background: #e0e0e0; }
         .size-chip.active {
             background: var(--ksb-blue);
             color: white;
             font-weight: bold;
             transform: scale(1.1);
         }
+        .size-chip.auto-chip { font-style: italic; }
 
         .logo-img { display: block; max-width: none; height: auto; }
         .logo3d { height: auto; }
@@ -265,13 +270,6 @@
                 </div>
             </div>
 
-            <div class="input-group" style="margin-bottom: 20px;">
-                <label>Logo-Breite (Manuell)</label>
-                <select id="sel-logo-w" onchange="draw()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; background: #fdfdfd;">
-                    <option value="auto">Automatisch berechnen</option>
-                </select>
-            </div>
-
             <div class="results">
                 <div class="result-item">
                     <div class="result-label">Ausgewählte Logo-Breite</div>
@@ -280,7 +278,7 @@
                 </div>
                 
                 <div class="result-item" style="margin-top: 20px;">
-                    <div class="result-label">Verfügbare Größen</div>
+                    <div class="result-label">Verfügbare Größen (Klickbar)</div>
                     <div id="size-list" class="logo-sizes-list"></div>
                 </div>
             </div>
@@ -335,25 +333,33 @@
 
     <script>
         let currentTab = '2d';
+        let manualSelection = 'auto';
         const LOGO_SIZES = [26, 37, 52, 74, 105, 210, 248, 250, 297, 385, 420, 594, 841, 1189].sort((a, b) => a - b);
 
         function initDropdown() {
-            const sel = document.getElementById('sel-logo-w');
             const list = document.getElementById('size-list');
-            LOGO_SIZES.forEach(size => {
-                // Dropdown
-                const opt = document.createElement('option');
-                opt.value = size;
-                opt.innerText = size + " mm";
-                sel.appendChild(opt);
+            
+            // Auto Chip
+            const autoChip = document.createElement('div');
+            autoChip.className = 'size-chip auto-chip';
+            autoChip.id = 'chip-auto';
+            autoChip.innerText = "Auto";
+            autoChip.onclick = () => selectSize('auto');
+            list.appendChild(autoChip);
 
-                // Chips
+            LOGO_SIZES.forEach(size => {
                 const chip = document.createElement('div');
                 chip.className = 'size-chip';
                 chip.id = 'chip-' + size;
                 chip.innerText = size + " mm";
+                chip.onclick = () => selectSize(size);
                 list.appendChild(chip);
             });
+        }
+
+        function selectSize(size) {
+            manualSelection = size;
+            draw();
         }
 
         function switchTab(tab) {
@@ -370,7 +376,6 @@
             const L = parseFloat(document.getElementById('in-l').value) || 0;
             const B = parseFloat(document.getElementById('in-b').value) || 0;
             const H = parseFloat(document.getElementById('in-h').value) || 0;
-            const manualW = document.getElementById('sel-logo-w').value;
 
             if (L <= 0 || B <= 0 || H <= 0) return;
 
@@ -378,8 +383,8 @@
             let logoW;
             let derivationText = "";
 
-            if (manualW !== "auto") {
-                logoW = parseFloat(manualW);
+            if (manualSelection !== 'auto') {
+                logoW = manualSelection;
                 derivationText = `Manuelle Auswahl: ${logoW} mm`;
             } else {
                 // Automatische Logik (Maximalabstand 23%)
@@ -407,9 +412,19 @@
             document.getElementById('res-logo-der').innerText = derivationText;
 
             // Chips hervorheben
-            document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
-            const activeChip = document.getElementById('chip-' + logoW);
-            if (activeChip) activeChip.classList.add('active');
+            document.querySelectorAll('.size-chip').forEach(c => {
+                c.classList.remove('active');
+                c.style.borderColor = "transparent";
+            });
+
+            if (manualSelection === 'auto') {
+                document.getElementById('chip-auto').classList.add('active');
+                const calcChip = document.getElementById('chip-' + logoW);
+                if (calcChip) calcChip.style.borderColor = "var(--ksb-blue)";
+            } else {
+                const activeChip = document.getElementById('chip-' + manualSelection);
+                if (activeChip) activeChip.classList.add('active');
+            }
 
             // 2D Logic
             if (currentTab === '2d') {
